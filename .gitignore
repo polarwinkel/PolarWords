@@ -1,3 +1,7 @@
+# own stuff
+*.sqlite3
+*.conf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

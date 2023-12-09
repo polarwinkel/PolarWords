@@ -31,6 +31,7 @@
 <script src="{{ relroot }}_static/polalert.js"></script>
 <script>
     var relroot = '{{ relroot }}';
+    var user = '{{ user }}';
     var users = JSON.parse('{{ users|tojson }}');
     var list = '<ul>';
     for (let i=0; i<users.length; i++) {
@@ -39,7 +40,7 @@
         list += '</li>';
     }
     list += '</ul>';
-    var user = '{{ user }}';
+    document.getElementById('userList').innerHTML = list;
     
     function renderColor(val) {
         let cells = document.getElementsByClassName('renderColor');
