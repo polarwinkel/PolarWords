@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+            <p id="nav" class="no-print" style="width:100%; background-color:080; text-align:right;">
+                <a href="{{ relroot }}">home</a> | 
+                <a href="{{ relroot }}_addWord">add word</a> | 
+                <a href="{{ relroot }}_logout">Logout</a>
+            </p>
+<div id="content">
+    <h1>Logged in as: {{ authuser }}</h1>
+    <p style="font-size:1.6em; text-align:center; font-weight:bold;"><a href="{{ relroot }}_learnWord">Learn now!</a></p>
+    <h2>Words List</h2>
+    <h3>Filter</h3>
+    <p>
+        <label for="tag">tag:</label>
+        <input type="text" class="formdata" name="tag" id="tag"><br>
+        <label for="tag">last n days:</label>
+        <input type="text" class="formdata" name="days" id="days" value="28">
+        <button onclick="getWords()">apply filter</button>
+    </p>
+    <div id="wordsList">
+        <p>loading wordslist...</p>
+    </div>
+</div>
+
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script src="{{ relroot }}_static/polalert.js"></script>
+<script>
+    var relroot = '{{ relroot }}';
+    var wordsList = JSON.parse('{{ words|tojson }}');
+    var user = '{{ user }}';
+    
+    function renderColor(val) {
+        let cells = document.getElementsByClassName('renderColor');
+        for (let i=0; i<cells.length; i++) {
+            let val = cells[i].innerHTML;
+            if (val!=null && !isNaN(val) && Number(val) >= 0 && Number(val) <= 5) {
+                var r = 200-(val)*40;
+                var g = (val)*40;
+                cells[i].style.backgroundColor = 'rgb('+r+', '+g+', 0)';
+            } else if (val!=null && !isNaN(val) && Number(val) > 5) {
+                cells[i].style.backgroundColor = 'rgb(0,255,0)';
+            }
+        }
+    }
+    
+    async function getWords() {
+        var getUrl = relroot+'_getWords/'+user;
+        var formJson = getFormJson();
+        formJson['user'] = user;
+        try{
+            const response = await fetch(getUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formJson)
+            });
+            response.text().then(function (text) {
+                let wordsList = JSON.parse(text);
+                var list = '<table>';
+                list += '<tr><th>word</th><th>description</th><th>&#x26D1;</th><th>last known</th><th>&#x270D;</th><th>last written</th><th>created</th><th>tags</th><th>&#128937;</th></tr>'
+                for (var i=0; i<wordsList.length; i++) {
+                    list += '<tr>';
+                    list += '<td><b>'+wordsList[i].word+'</b></td>';
+                    list += '<td><b>'+wordsList[i].desc+'</b></td>';
+                    list += '<td class="renderColor">'+wordsList[i].mentalScore+'</td>';
+                    list += '<td>'+wordsList[i].lastMentalKnown+'</td>';
+                    list += '<td class="renderColor">'+wordsList[i].writtenScore+'</td>';
+                    list += '<td>'+wordsList[i].lastWrittenKnown+'</td>';
+                    list += '<td>'+wordsList[i].created+'</td>';
+                    list += '<td>'+wordsList[i].tags+'</td>';
+                    list += '<td onclick="pa.boolean(\'Really delete '+wordsList[i].word+'?\', \''+wordsList[i].wid+'\')">&#128937;</td>';
+                    list += '</tr>';
+                }
+                list += '</table>';
+                document.getElementById('wordsList').innerHTML = list;
+                renderColor();
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
+    getWords();
+    
+    function paOk(wid) {
+        deleteWord(wid);
+    }
+    function paNo(wid) {
+    }
+    async function deleteWord(wid) {
+        // send request to server
+        var deleteUrl = relroot+'_delete/'+wid;
+        try{
+            const response = await fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                },
+            });
+            response.text().then(function (text) {
+                location.reload();
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
+</script>
+
+{% endblock %}

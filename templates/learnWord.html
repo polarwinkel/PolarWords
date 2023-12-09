@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+            <p id="nav" class="no-print" style="width:100%; background-color:080; text-align:right;">
+                <a href="{{ relroot }}">home</a>
+            </p>
+<nav id="pagenav">
+    <a href="{{ relroot }}_logout">Logout</a>
+</nav>
+<div id="content">
+    <h1>Logged in as: {{ authuser }}</h1>
+    <h2>learn words</h2>
+    <input type="hidden" class="formdata" name="wid" id="wid">
+    <label for="desc">description: </label>
+    <input type="text" class="formdata" name="desc" id="desc"><br>
+    <label for="word">word:</label>
+    <input type="text" class="formdata" name="word" id="word"
+            onkeydown = "if (event.keyCode == 13) runJob('checkWritten')">
+    <span>(<code>Enter</code> will submit this)</span><br>
+    <input type="text" name="hint" id="hint" disabled>
+    <label for="hint">hint:</label>
+    <p><span id="mentalScore"></span> | <span id="writtenScore"></span></p>
+    <button onclick="runJob('getNew')">&#8631; skip</button>
+    <button onclick="showDesc()">&#9215; show</button><br><br>
+    <button onclick="runJob('mentalSuccess')" style="background-color: #0a0;">&#x26D1; I knew it!</button>
+    <button onclick="runJob('mentalFail')" style="background-color: #a00;">&#x26D1; I didn't know it.</button><br><br>
+    <button onclick="runJob('checkWritten')" style="background-color: #00a;">&#x270D; check written</button>
+    <hr>
+    <label for="tag">filter tag: </label>
+    <input type="text" class="formdata" name="tag" id="tag"><br>
+    <p>Tags should be space-separated.</p>
+    <p>TODO: show already used tags</p>
+</div>
+
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script src="{{ relroot }}_static/polalert.js"></script>
+<script>
+    var relroot = '{{ relroot }}';
+    var wordDict = {};
+    var blocked = false;
+    function showDesc() {
+        document.getElementById('desc').value = wordDict.word;
+    }
+    async function runJob(j) {
+        // send form to server
+        var formJson = getFormJson();
+        let job = {'job': j};
+        job['word'] = formJson;
+        job['tag'] = document.getElementById('tag').value;
+        let putUrl = relroot+'_learnWord';
+        try{
+            const response = await fetch(putUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(job)
+            });
+            response.text().then(function (text) {
+                try {
+                    var result = JSON.parse(text)
+                    wordDict = result;
+                } catch {
+                    result = text;
+                }
+                if (job.job == 'getNew') {
+                    if (result.hasOwnProperty('word')) {
+                        document.getElementById('wid').value = result.wid;
+                        document.getElementById('desc').value = result.desc;
+                        document.getElementById('hint').value = result.hint;
+                        document.getElementById('mentalScore').innerHTML = 'mental score: '+result.mS;
+                        document.getElementById('writtenScore').innerHTML = 'written score: '+result.wS;
+                        document.getElementById('word').value = '';
+                    } else {
+                        if (document.getElementById('tag').value == '') {
+                            pa.message('No words left to learn.<br>Add new ones or have a nice day!');
+                        } else {
+                            pa.message('No words left to learn.<br><b>Remove filter tag</b>, add new words<br> or have a nice day!');
+                        }
+                    }
+                } else if (job.job == 'mentalSuccess') {
+                    pa.message('Good job!')
+                    runJob('getNew');
+                } else if (job.job == 'mentalFail') {
+                    pa.warning('All right, try again.')
+                    runJob('getNew');
+                } else if (job.job == 'checkWritten') {
+                    console.log(result);
+                    if (typeof result === 'string' || result instanceof String) {
+                        pa.error('no, the right answer was:<br>'+result);
+                    } else {
+                        pa.message('Good job!')
+                    }
+                    runJob('getNew');
+                }
+            });
+        } catch(err) {
+            alert(err);
+        }
+    }
+    runJob('getNew');
+</script>
+
+{% endblock %}

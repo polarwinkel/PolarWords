@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+            <p id="nav" class="no-print" style="width:100%; background-color:080; text-align:right;">
+                &nbsp;
+            </p>
+<nav id="pagenav">
+</nav>
+<div id="content">
+    <h1>PolarWords Login</h1>
+    <form action='_login' method='POST'>
+        <input type='text' name='username' id='username' placeholder='username'>
+        <input type='password' name='password' id='password' placeholder='password'>
+        <input type='submit' name='submit'>
+    </form>
+    
+    <p>&nbsp;</p>
+    <p>PolarWords is a free vocabulary-training-server for students and teachers. It was developed by Dirk Winkel and can be <a href="https://github.com/polarwinkel/">downloaded, cloned and forked on GitHub</a>.</p>
+    <p>There is no further content here on the index-page, please log in to learn your words!</p>
+</div>
+
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script src="{{ relroot }}_static/polalert.js"></script>
+{% endblock %}

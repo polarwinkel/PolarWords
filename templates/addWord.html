@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+            <p id="nav" class="no-print" style="width:100%; background-color:080; text-align:right;">
+                <a href="{{ relroot }}">home</a>
+            </p>
+<nav id="pagenav">
+    <a href="{{ relroot }}_logout">Logout</a>
+</nav>
+<div id="content">
+    <h1>Logged in as: {{ authuser }}</h1>
+    <h2>add a new Word</h2>
+    <label for="word">word:</label>
+    <input type="text" class="formdata" name="word" id="word"><br>
+    <label for="desc">description: </label>
+    <input type="text" class="formdata" name="desc" id="desc" 
+            onkeydown = "if (event.keyCode == 13) submit()">
+    <span>(<code>Enter</code> will submit this)</span><br>
+    <label for="desc">hint: </label>
+    <input type="text" class="formdata" name="hint" id="hint" 
+            onkeydown = "if (event.keyCode == 13) submit()"><br>
+    <label for="tags">tags: </label>
+    <input type="text" class="formdata" name="tags" id="tags"><br>
+    <label for="submit" id="submitLabel" style="color: #0a0">&nbsp;</label>
+    <button id="submit" onclick="submit()">add</button>
+    <p>Tags should be space-separated.</p>
+    <p>TODO: show already used tags</p>
+</div>
+
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script>
+    var relroot = '{{ relroot }}';
+    async function submit() {
+        // send form to server
+        var formJson = getFormJson();
+        var postUrl = relroot+'_addWord';
+        try{
+            const response = await fetch(postUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formJson)
+            });
+            response.text().then(function (text) {
+                if (text=='ok') {
+                    document.getElementById('submitLabel').innerHTML = '(added: '+formJson.word+')';
+                    document.getElementById('word').value = '';
+                    document.getElementById('desc').value = '';
+                    document.getElementById('hint').value = '';
+                    document.getElementById('word').focus();
+                } else {
+                    alert(text);
+                }
+            });
+        } catch(err) {
+            alert(err);
+        }
+    }
+</script>
+
+{% endblock %}
