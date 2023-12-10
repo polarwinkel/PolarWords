@@ -11,8 +11,8 @@
             <rect x="1" y="1" width="30" height="30" stroke-width="2" stroke="#333" rx="3" ry="3"  stroke-linejoin="round" fill="url(#linearGradient)"/>
         </g>
         <g type="text" font-family="sans-serif" fill="white" font-size="24" font-weight="bold">
-            <text x="4" y="22">T</text>
-            <text x="16" y="28">c</text>
+            <text x="4" y="20">P</text>
+            <text x="10" y="28">w</text>
         </g>
     </g>
 </svg>
