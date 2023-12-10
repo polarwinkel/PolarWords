@@ -21,10 +21,10 @@
     <label for="hint">hint:</label>
     <p><span id="mentalScore"></span> | <span id="writtenScore"></span></p>
     <button onclick="runJob('getNew')">&#8631; skip</button>
-    <button onclick="showDesc()">&#9215; show</button><br><br>
+    <button onclick="showWord()">&#9215; show</button><br><br>
     <button onclick="runJob('mentalSuccess')" style="background-color: #0a0;">&#x26D1; I knew it!</button>
     <button onclick="runJob('mentalFail')" style="background-color: #a00;">&#x26D1; I didn't know it.</button><br><br>
-    <button onclick="runJob('checkWritten')" style="background-color: #00a;">&#x270D; check written</button>
+    <button onclick="runJob('checkWritten')" style="background-color: #00a;" id="checkWritten">&#x270D; check written</button>
     <hr>
     <label for="tag">filter tag: </label>
     <input type="text" class="formdata" name="tag" id="tag"><br>
@@ -37,9 +37,9 @@
 <script>
     var relroot = '{{ relroot }}';
     var wordDict = {};
-    var blocked = false;
-    function showDesc() {
-        document.getElementById('desc').value = wordDict.word;
+    function showWord() {
+        document.getElementById('checkWritten').disabled = true;
+        document.getElementById('word').value = wordDict.word;
     }
     async function runJob(j) {
         // send form to server
@@ -68,9 +68,10 @@
                         document.getElementById('wid').value = result.wid;
                         document.getElementById('desc').value = result.desc;
                         document.getElementById('hint').value = result.hint;
-                        document.getElementById('mentalScore').innerHTML = 'mental score: '+result.mS;
-                        document.getElementById('writtenScore').innerHTML = 'written score: '+result.wS;
+                        document.getElementById('mentalScore').innerHTML = '&#x26D1; mental score: '+result.mS;
+                        document.getElementById('writtenScore').innerHTML = '&#x270D; written score: '+result.wS;
                         document.getElementById('word').value = '';
+                        document.getElementById('checkWritten').disabled = false;
                     } else {
                         if (document.getElementById('tag').value == '') {
                             pa.message('No words left to learn.<br>Add new ones or have a nice day!');
@@ -85,7 +86,6 @@
                     pa.warning('All right, try again.')
                     runJob('getNew');
                 } else if (job.job == 'checkWritten') {
-                    console.log(result);
                     if (typeof result === 'string' || result instanceof String) {
                         pa.error('no, the right answer was:<br>'+result);
                     } else {

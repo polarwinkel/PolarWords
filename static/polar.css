@@ -1,4 +1,4 @@
-/* v1.2.0 */
+/* v1.2.1 */
 /* for proper form-sizing */
 * {
   box-sizing: border-box;
@@ -55,6 +55,9 @@ button:active {
     background-color: #aaa;
     box-shadow: 0 0px;
     transform: translateX(2px) translateY(2px);
+}
+button:disabled {
+    color: #888;
 }
 select {
     font-size: 1em;
@@ -154,6 +157,9 @@ textarea {
     }
     button:active {
         background-color: #444;
+    }
+    button:disabled {
+        color: #888;
     }
     a {
         color:#4f4;
