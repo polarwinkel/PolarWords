@@ -15,7 +15,7 @@
     <input type="text" class="formdata" name="desc" id="desc"><br>
     <label for="word">word:</label>
     <input type="text" class="formdata" name="word" id="word"
-            onkeydown = "if (event.keyCode == 13) runJob('checkWritten')">
+            onkeydown = "if (event.keyCode == 13 && !document.getElementById('checkWritten').disabled) runJob('checkWritten')">
     <span>(<code>Enter</code> will submit this)</span><br>
     <input type="text" name="hint" id="hint" disabled>
     <label for="hint">hint:</label>
@@ -86,12 +86,10 @@
                     pa.warning('All right, try again.')
                     runJob('getNew');
                 } else if (job.job == 'checkWritten') {
-                    if (!document.getElementById('checkWritten').disabled) {
-                        if (typeof result === 'string' || result instanceof String) {
-                            pa.error('no, the right answer was:<br>'+result);
-                        } else {
-                            pa.message('Good job!')
-                        }
+                    if (typeof result === 'string' || result instanceof String) {
+                        pa.error('no, the right answer was:<br>'+result);
+                    } else {
+                        pa.message('Good job!')
                     }
                     runJob('getNew');
                 }
