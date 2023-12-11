@@ -86,10 +86,12 @@
                     pa.warning('All right, try again.')
                     runJob('getNew');
                 } else if (job.job == 'checkWritten') {
-                    if (typeof result === 'string' || result instanceof String) {
-                        pa.error('no, the right answer was:<br>'+result);
-                    } else {
-                        pa.message('Good job!')
+                    if (!document.getElementById('checkWritten').disabled) {
+                        if (typeof result === 'string' || result instanceof String) {
+                            pa.error('no, the right answer was:<br>'+result);
+                        } else {
+                            pa.message('Good job!')
+                        }
                     }
                     runJob('getNew');
                 }
