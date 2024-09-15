@@ -149,7 +149,7 @@ def user(user):
     if flask_login.current_user.id != settings.get('admin') and flask_login.current_user.id != user:
         return '405 not allowed'
     db = dbio.PwDb(dbfile)
-    words = db.getWords(user)
+    words = json.dumps(db.getWords(user), ensure_ascii=False)
     return render_template('user.html', relroot='../', user=user, words=words, authuser=flask_login.current_user.id)
 
 @app.route('/_addWord', methods=['GET', 'POST'])

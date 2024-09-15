@@ -27,7 +27,7 @@
 <script src="{{ relroot }}_static/polalert.js"></script>
 <script>
     var relroot = '{{ relroot }}';
-    var wordsList = JSON.parse('{{ words|tojson }}');
+    var wordsList = JSON.parse('{{ words | safe }}');
     var user = '{{ user }}';
     
     function renderColor(val) {
